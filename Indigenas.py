@@ -75,9 +75,6 @@ def compute_all_simulations():
 # Load cached simulations
 results = compute_all_simulations()
 
-
-
-
 # Streamlit app setup
 st.title("Simulación de Dinámicas de Empleo para Poblaciones Indígenas")
 
@@ -88,41 +85,41 @@ st.header("Explicación de los Parámetros")
 
 # Define parameters and their descriptions
 parameters = {
-"Temporalidad Política Pública": {
-"Descripción": "Placeholder text for Temporalidad Política Pública.",
-"Valor": 10
-},
-"Becas Personas Indígenas": {
-"Descripción": "Placeholder text for Becas Personas Indígenas.",
-"Valor": 0
-},
 "Ingreso Superior al Salario Mínimo Promedio": {
-"Descripción": "Placeholder text for Ingreso Superior al Salario Mínimo Promedio.",
+"Descripción": "Tomando la información de la Encuesta Nacional de Ocupación y Empleo (ENOE), se considera el ingreso promedio de una persona indígena con empleo superior al salario mínimo.",
 "Valor": 73311
 },
 "Ingreso Inferior al Salario Mínimo Promedio": {
-"Descripción": "Placeholder text for Ingreso Inferior al Salario Mínimo Promedio.",
+"Descripción": "Tomando la información de la ENOE, se considera el ingreso promedio de una persona indígena con empleo inferior al salario mínimo.",
 "Valor": 54900
 },
-"Política Educativa": {
-"Descripción": "Placeholder text for Política Educativa.",
-"Valor": 0
-},
 "Aumento de Contratación por Escolaridad": {
-"Descripción": "Placeholder text for Aumento de Contratación por Escolaridad.",
+"Descripción": "A partir de los datos de la ENOE, se calcula el aumento simple en la contratación por cada año adicional de escolaridad (Nivel de Instrucción).",
 "Valor": 0.00125
 },
 "Tasa de Contratación Promedio": {
-"Descripción": "Placeholder text for Tasa de Contratación Promedio.",
+"Descripción": "Tasa de contratación promedio donde se considera la cantidad de personas que consiguen empleo respecto a la población económicamente activa.",
 "Valor": 0.025
 },
 "Tasa de Desempleo Promedio": {
-"Descripción": "Placeholder text for Tasa de Desempleo Promedio.",
+"Descripción": "Tasa de desempleo promedio de personas indígenas, considerando la población económicamente activa.",
 "Valor": 0.05
 },
 "Costo Mínimo de Vida": {
-"Descripción": "Placeholder text for Costo Mínimo de Vida.",
+"Descripción": "Costo mínimo de vida para una persona indígena, considerando alimentación, vivienda, transporte y otros gastos básicos.",
 "Valor": 39000
+},
+"Política Educativa": {
+"Descripción": "Inversión en infraestructura y en general acciones que reduzcan el costo de la educación (Forma parte de los parámetros de Política Pública).",
+"Valor": 0
+},
+"Temporalidad Política Pública": {
+"Descripción": "El tiempo que tarda la política pública en mostrar efectos, considerando que la inversión en infraestructura y acceso tarda años desde planeación hasta ejecución (Forma parte de los parámetros de Política Pública).",
+"Valor": 0
+},
+"Becas Personas Indígenas": {
+"Descripción": "Cantidad de recursos destinados a becas para una persona indígena en un año, con el objetivo de mejorar la educación. (Forma parte de los parámetros de Política Pública)",
+"Valor": 0
 }
 }
 headers = ["Variable", "Descripción", "Valor"]
