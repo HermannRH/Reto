@@ -390,8 +390,3 @@ st.write(f"La combinación de parámetros que da el mínimo empleo inferior al s
 
 # Report total number of simulations
 st.write(f"Se realizaron {len(results)} simulaciones en total.")
-
-st.header("Recursos Adicionales")
-st.write("A continuación se encuentran algunos recursos adicionales relacionados con el tema:")
-st.write("- [Informe sobre la situación laboral de las poblaciones indígenas](https://example.com/informe)")
-st.write("- [Artículo sobre políticas públicas para el empleo indígena](https://example.com/articulo)")
