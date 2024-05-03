@@ -295,51 +295,49 @@ st.line_chart(normalized_selection)
 
 # Function to generate charts for varying parameters
 def generate_chart(fixed_param1, fixed_param2, varying_param_range, fixed_indices, varying_param_index, param_name):
-    all_lines = []  # List to store all the lines for the chart
+    all_lines = []
 
     for value in varying_param_range:
-        params = [0, 0, 0]  # Initialize with placeholder list
+        params = [0, 0, 0]
         params[varying_param_index] = value
         params[fixed_indices[0]] = fixed_param1
         params[fixed_indices[1]] = fixed_param2
-        
-        # Ensure parameters are rounded to match the simulation grid exactly
+
         rounded_params = tuple(round(p, 3) if i == 0 else round(p, 2) if i == 1 else int(p) for i, p in enumerate(params))
-        
         scenario_data = results[rounded_params]
         normalized_data = scenario_data.div(scenario_data.sum(axis=1), axis=0)
-        normalized_data['Parameter Value'] = value  # Add the parameter value as a column for coloring
-        
+        normalized_data['Parameter Value'] = value
         all_lines.append(normalized_data.reset_index())
 
-    # Concatenate all lines into a single DataFrame
     all_data = pd.concat(all_lines)
-    
-    # Create a color scale that varies from red to green
-    color_scale = alt.Scale(domain=(min(varying_param_range), max(varying_param_range)), range=['red', 'green'])
 
-    # Create the chart using all the data
+    color_scale = alt.Scale(domain=(min(varying_param_range), max(varying_param_range)), 
+                                range=['#6495ED', '#FFD700'])  # Cobalt Blue to Gold Distinct color range
+
     chart = alt.Chart(all_data).mark_line().encode(
         x='Time',
-        y=alt.Y('Empleos superiores al salario minimo', axis=alt.Axis(title='Proporción de personas con Empleos superiores al salario minimo')),
+        y=alt.Y('Empleos superiores al salario minimo', 
+                axis=alt.Axis(title='Proporción de personas con Empleos superiores al salario minimo'),
+                scale=alt.Scale(domain=[0, 1])),  # Set y-axis scale to start at 0
         color=alt.Color('Parameter Value', scale=color_scale),
         tooltip=['Time', 'Empleos superiores al salario minimo', 'Parameter Value']
     ).properties(
-        title=f"Simulación en el tiempo cambiando: {param_name}"
+        title=f"Effect of Varying {param_name} Over Time",
+        width=600,  # Increase chart width
+        height=400  # Increase chart height
     ).interactive()
 
     return chart
 
-
-# Generate and display charts for each parameter
 st.header("Efecto de Variar los Parámetros Individualmente")
-chart_gasto = generate_chart(selected_discrim, selected_costo_educ, gasto_educ_range, [1, 2], 0, "Tasa de Gasto en Educación")
+
+chart_gasto = generate_chart(selected_discrim, selected_costo_educ, gasto_educ_range, [1, 2], 0, "Education Spending Rate")
 st.altair_chart(chart_gasto)
 
-chart_discrim = generate_chart(selected_gasto, selected_costo_educ, discrim_range, [0, 2], 1, "Nivel de Discriminación")
+chart_discrim = generate_chart(selected_gasto, selected_costo_educ, discrim_range, [0, 2], 1, "Discrimination Level")
 st.altair_chart(chart_discrim)
 
-chart_costo_educ = generate_chart(selected_gasto, selected_discrim, costo_educ_range, [0, 1], 2, "Costo Promedio por Año de Educación")
+chart_costo_educ = generate_chart(selected_gasto, selected_discrim, costo_educ_range, [0, 1], 2, "Average Cost per Year of Education")
 st.altair_chart(chart_costo_educ)
 
 
@@ -348,8 +346,8 @@ st.header("Efecto de Variar los 3 Parámetros Simultáneamente")
 final_values = {params: df.iloc[-1] for params, df in results.items()}
 
 # Identify the extreme scenarios
-max_employment = max(final_values, key=lambda x: final_values[x]['Empleos inferiores al salario minimo'])
-min_employment = min(final_values, key=lambda x: final_values[x]['Empleos inferiores al salario minimo'])
+max_employment = max(final_values, key=lambda x: 1 - final_values[x]['Empleos inferiores al salario minimo'])
+min_employment = min(final_values, key=lambda x: 1 - final_values[x]['Empleos inferiores al salario minimo'])
 
 # Access the specific dataframes for maximum and minimum scenarios
 max_df = results[max_employment]
@@ -358,6 +356,10 @@ min_df = results[min_employment]
 # Normalize data for plotting
 max_normalized = max_df.div(max_df.sum(axis=1), axis=0)
 min_normalized = min_df.div(min_df.sum(axis=1), axis=0)
+
+# Calculate the proportion of people with jobs above the minimum wage
+max_normalized['Empleos superiores al salario minimo'] = 1 - max_normalized['Empleos inferiores al salario minimo']
+min_normalized['Empleos superiores al salario minimo'] = 1 - min_normalized['Empleos inferiores al salario minimo']
 
 # Combine the data for plotting
 extreme_data = pd.concat([max_normalized.reset_index(), min_normalized.reset_index()], keys=['Max', 'Min'])
@@ -368,11 +370,15 @@ extreme_data['Scenario'] = extreme_data.index.get_level_values(0)
 # Create the chart
 extreme_chart = alt.Chart(extreme_data).mark_line().encode(
     x='Time',
-    y=alt.Y('Empleos inferiores al salario minimo', axis=alt.Axis(title='Proporción de personas con Empleos inferiores al salario minimo')),
-    color='Scenario',
-    tooltip=['Time', 'Empleos inferiores al salario minimo', 'Scenario']
+    y=alt.Y('Empleos superiores al salario minimo',
+            axis=alt.Axis(title='Proporción de personas con Empleos superiores al salario minimo'),
+            scale=alt.Scale(domain=[0, 1])),
+    color=alt.Color('Scenario'),  # Distinct colors for scenarios
+    tooltip=['Time', 'Empleos superiores al salario minimo', 'Scenario']
 ).properties(
-    title="Comparación de los escenarios extremos"
+    title="Comparación de los escenarios extremos",
+    width=600,
+    height=400  
 ).interactive()
 
 # Display the chart in the Streamlit app
